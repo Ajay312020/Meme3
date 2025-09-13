@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GK MASTER</title>
+    <meta name="description" content="AI-Powered GK Training App">
+    <style>
+        /* --- GK MASTER CSS --- */
+        /* TODO: For production, minify this CSS. */
+
+        /* 1. Reset and Global Styles */
+        :root {
+            --bg-color: #fdf6f8;
+            --primary-color: #ffb6c1; /* Light Pink */
+            --secondary-color: #a2d2ff; /* Light Blue */
+            --accent-color: #fec89a; /* Peach */
+            --text-color: #333;
+            --correct-color: #90ee90; /* Light Green */
+            --wrong-color: #ff7f7f; /* Light Red */
+            --white-color: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --font-family: 'Poppins', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            font-size: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        /* 2. App Container and Screen Management */
+        .app-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0s 0.5s;
+            overflow-y: auto;
+        }
+
+        .screen.active {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.5s ease;
+        }
+
+        /* 3. Loading Screen */
+        #loading-screen {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--white-color);
+            text-align: center;
+            z-index: 1000;
+        }
+
+        #loading-screen h1 {
+            font-size: 3rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            animation: bounceIn 1s ease;
+        }
+        
+        #loading-progress {
+            margin-top: 1rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .ad-placeholder {
+            position: absolute;
+            bottom: 20px;
+            width: 90%;
+            max-width: 320px;
+            height: 50px;
+            background-color: #f0f0f0;
+            border: 2px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            font-size: 0.9rem;
+            border-radius: 8px;
+        }
+
+        /* 4. Auth Screen */
+        #auth-screen {
+            background-color: var(--bg-color);
+        }
+
+        #auth-screen .auth-card {
+            background: var(--white-color);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        #auth-screen h2 {
+            margin-bottom: 1rem;
+        }
+
+        .google-signin-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
+            border-radius: 8px;
+            background-color: var(--white-color);
+            color: #444;
+            font-weight: 500;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 2px 4px var(--shadow-color);
+        }
+
+        .google-signin-btn:hover {
+            background-color: #f5f5f5;
+            box-shadow: 0 4px 8px var(--shadow-color);
+        }
+
+        .google-signin-btn svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+        }
+
+        /* 5. Dashboard */
+        #dashboard-screen {
+            justify-content: flex-start;
+            padding-top: 60px; /* Space for header */
+        }
+        
+        .app-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--white-color);
+            box-shadow: 0 2px 5px var(--shadow-color);
+            z-index: 100;
+        }
+
+        .app-header .app-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        #profile-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            color: var(--white-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            overflow: hidden;
+        }
+        
+        #profile-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .section-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+            width: 100%;
+            max-width: 1200px;
+            padding: 1rem;
+        }
+
+        .section-card {
+            background: var(--white-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 10px var(--shadow-color);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px var(--shadow-color);
+        }
+
+        .section-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .section-card p {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .section-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary-color);
+            color: var(--white-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: #8abde4;
+        }
+
+        .btn-secondary {
+            background-color: var(--accent-color);
+            color: var(--white-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e9b384;
+        }
+
+        /* 6. Question Screen */
+        #question-screen {
+            background: linear-gradient(135deg, var(--bg-color), #e0eaff);
+        }
+
+        .question-container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--white-color);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+        }
+        
+        #question-progress {
+            text-align: center;
+            margin-bottom: 1rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        #question-text {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            min-height: 60px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+        }
+
+        .option-btn {
+            width: 100%;
+            padding: 1rem;
+            text-align: left;
+            background-color: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:hover {
+            border-color: var(--secondary-color);
+            background-color: #eef6ff;
+        }
+        
+        .option-btn.correct {
+            background-color: var(--correct-color);
+            border-color: #5cb85c;
+            color: white;
+        }
+        
+        .option-btn.wrong {
+            background-color: var(--wrong-color);
+            border-color: #d9534f;
+            color: white;
+        }
+
+        .option-btn.disabled {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .question-footer {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .hint-btn {
+            background: none;
+            border: none;
+            color: var(--accent-color);
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* 7. Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease;
+        }
+        
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--white-color);
+            padding: 2rem;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            animation: bounceIn 0.4s;
+            position: relative;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #888;
+        }
+        
+        #profile-modal h2 { color: var(--primary-color); margin-bottom: 1rem; }
+        #profile-email { color: #555; margin-bottom: 1.5rem; word-break: break-all; }
+        .profile-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+        .stat-item { background: #f8f9fa; padding: 1rem; border-radius: 8px; text-align: center; }
+        .stat-item .label { font-size: 0.9rem; color: #666; }
+        .stat-item .value { font-size: 1.2rem; font-weight: bold; color: var(--secondary-color); }
+        #sign-out-btn { width: 100%; background-color: var(--wrong-color); color: white; }
+
+        /* 8. Result Screen */
+        #result-screen .result-card {
+            background: var(--white-color);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            text-align: center;
+        }
+        #result-screen h2 { color: var(--secondary-color); }
+        #result-summary { font-size: 1.2rem; margin: 1rem 0; }
+        #result-score { font-size: 3rem; font-weight: bold; color: var(--primary-color); margin-bottom: 1.5rem; }
+        .result-actions { display: flex; gap: 1rem; justify-content: center; }
+
+        /* 9. Toast Notifications */
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .toast {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            font-size: 0.9rem;
+        }
+
+        /* 10. Animations */
+        @keyframes bounceIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 11. Responsive Design */
+        @media (min-width: 768px) {
+            :root {
+                font-size: 18px;
+            }
+            .options-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        /* Confetti */
+        .confetti {
+            width: 10px;
+            height: 10px;
+            background-color: var(--primary-color);
+            position: absolute;
+            top: -20px;
+            animation: fall 3s linear infinite;
+        }
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Startup / Loading Screen -->
+        <div id="loading-screen" class="screen active">
+            <h1>GK MASTER</h1>
+            <div id="loading-progress">0%</div>
+            <!-- TODO: Replace with real AdSense code -->
+            <div class="ad-placeholder" data-ad-slot="banner-placeholder">Banner Ad Placeholder</div>
+        </div>
+
+        <!-- Auth Screen -->
+        <div id="auth-screen" class="screen">
+            <div class="auth-card">
+                <h2>Welcome to GK MASTER</h2>
+                <p>Sign in to start your journey!</p>
+                <br>
+                <button id="google-signin-btn" class="google-signin-btn">
+                    <!-- Google SVG Icon -->
+                    <svg viewBox="0 0 18 18">
+                        <g fill="none" fill-rule="evenodd">
+                            <path d="M17.64 9.2045c0-.6381-.0573-1.2518-.1636-1.8409H9v3.4818h4.8436c-.2086 1.125-.8427 2.0782-1.7772 2.7218v2.2582h2.9082c1.7018-1.5668 2.6864-3.8736 2.6864-6.6218z" fill="#4285F4"></path>
+                            <path d="M9 18c2.43 0 4.4673-.806 5.9564-2.1805l-2.9082-2.2582c-.806.544-1.8409.8718-3.0482.8718-2.344 0-4.3282-1.5805-5.0355-3.7023H.9573v2.3318C2.4382 16.1423 5.4818 18 9 18z" fill="#34A853"></path>
+                            <path d="M3.9645 10.71c-.181-.544-.2827-1.1168-.2827-1.71s.1018-1.166.2827-1.71V4.9582H.9573C.3477 6.1718 0 7.5477 0 9c0 1.4523.3477 2.8282.9573 4.0418L3.9645 10.71z" fill="#FBBC05"></path>
+                            <path d="M9 3.5782c1.3218 0 2.5077.4545 3.4409 1.3455l2.5818-2.5818C13.4636.8918 11.4259 0 9 0 5.4818 0 2.4382 1.8577.9573 4.9582L3.9645 7.29C4.6718 5.1682 6.6564 3.5782 9 3.5782z" fill="#EA4335"></path>
+                        </g>
+                    </svg>
+                    <span>Sign in with Google</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard Screen -->
+        <div id="dashboard-screen" class="screen">
+            <header class="app-header">
+                <div class="app-title">GK MASTER</div>
+                <div id="profile-icon"></div>
+            </header>
+            <div class="section-grid">
+                <!-- Section cards will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- Question Screen -->
+        <div id="question-screen" class="screen">
+            <div class="question-container">
+                <div id="question-progress">Question 1/15</div>
+                <p id="question-text">Loading question...</p>
+                <div id="options-grid" class="options-grid">
+                    <!-- Option buttons will be dynamically inserted here -->
+                </div>
+                <div class="question-footer">
+                    <button id="hint-btn" class="hint-btn">💡 Get a Hint</button>
+                    <button id="next-question-btn" class="btn btn-primary" style="display:none;">Next</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Result Screen -->
+        <div id="result-screen" class="screen">
+            <div class="result-card">
+                 <h2>Quiz Complete!</h2>
+                 <p id="result-summary">You scored...</p>
+                 <div id="result-score">80%</div>
+                 <div class="result-actions">
+                     <button id="restart-quiz-btn" class="btn btn-primary">Try Again</button>
+                     <button id="back-to-dashboard-btn" class="btn btn-secondary">Dashboard</button>
+                 </div>
+                 <br>
+                 <!-- TODO: Replace with real AdSense interstitial ad logic -->
+                 <div class="ad-placeholder" data-ad-slot="interstitial-placeholder" style="position:relative; margin-top: 20px;">Interstitial Ad Placeholder</div>
+            </div>
+        </div>
+
+        <!-- Profile Modal -->
+        <div id="profile-modal" class="modal">
+            <div class="modal-content">
+                <button class="modal-close">&times;</button>
+                <h2>My Profile</h2>
+                <p id="profile-email">user@example.com</p>
+                <div class="profile-stats">
+                    <div class="stat-item"><span class="label">Rank</span><span class="value" id="profile-rank">Bronze</span></div>
+                    <div class="stat-item"><span class="label">Coins</span><span class="value" id="profile-coins">100</span></div>
+                    <div class="stat-item"><span class="label">Total Correct</span><span class="value" id="profile-correct">0</span></div>
+                    <div class="stat-item"><span class="label">Total Attempts</span><span class="value" id="profile-attempts">0</span></div>
+                </div>
+                <button id="sign-out-btn" class="btn">Sign Out</button>
+            </div>
+        </div>
+        
+        <!-- Hint Ad Modal -->
+        <div id="hint-ad-modal" class="modal">
+            <div class="modal-content" style="text-align:center;">
+                <button class="modal-close">&times;</button>
+                <h3>Watch an ad for a hint?</h3>
+                <p>You'll also get 10 coins!</p>
+                <br>
+                <div class="result-actions">
+                     <button id="confirm-ad-watch-btn" class="btn btn-primary">Watch Ad</button>
+                     <button id="cancel-ad-watch-btn" class="btn btn-secondary">No Thanks</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Generic Message Modal -->
+        <div id="message-modal" class="modal">
+            <div class="modal-content" style="text-align:center;">
+                <button class="modal-close">&times;</button>
+                <h3 id="message-modal-title">Hint</h3>
+                <p id="message-modal-text">This is the hint text.</p>
+                <br>
+                <button id="message-modal-ok-btn" class="btn btn-primary">Got it!</button>
+            </div>
+        </div>
+
+        <!-- Toast Container -->
+        <div id="toast-container"></div>
+
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    
+    <script>
+    // --- GK MASTER JAVASCRIPT ---
+
+    /**************************************************************************************************
+     * README & PRODUCTION SETUP
+     * 
+     * This is a single-file implementation for demonstration. For production:
+     * 1.  **Build Step**: Separate JS, CSS into their own files and minify them.
+     * 2.  **API Keys**: The `fetchGeminiBatch` function should call YOUR OWN server endpoint. Your server
+     *     will then securely call the Gemini API with your secret key.
+     * 3.  **Security**: Client-side data in IndexedDB is not secure. Sensitive user progress should
+     *     be synced with a server database like Firestore for leaderboards and persistence.
+     * 4.  **Ads**: Replace all `data-ad-slot` placeholders and simulated ad functions with real
+     *     Google AdSense or AdMob SDK integrations.
+     * 5.  **Error Handling**: Add more robust error handling for API calls, DB operations, etc.
+     * 
+     **************************************************************************************************/
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // --- 1. CONFIGURATION & STATE MANAGEMENT ---
+
+        const DEBUG = true; // Toggle for console logs
+
+        // --- THIS IS YOUR REAL FIREBASE CONFIGURATION ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyDgvM9KVmPCU5G--b0cN23C3Akl4AH-rR0",
+            authDomain: "gk-master-7c5b8.firebaseapp.com",
+            databaseURL: "https://gk-master-7c5b8-default-rtdb.firebaseio.com",
+            projectId: "gk-master-7c5b8",
+            storageBucket: "gk-master-7c5b8.appspot.com",
+            messagingSenderId: "84454232469",
+            appId: "1:84454232469:web:0a8dd40e9a91b7793f269c"
+        };
+
+        // --- App State ---
+        let allQuestions = [];
+        let currentQuizQuestions = [];
+        let currentIndex = 0;
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userProfile = null; // To hold Firebase user object
+        let userProgress = {
+            coins: 100,
+            rank: 'Bronze',
+            examsWith80Percent: 0,
+            totalCorrect: 0,
+            totalAttempts: 0,
+            // History of achievements, etc. can be added here
+        };
+
+        const rankRequirements = {
+            'Bronze': { next: 'Silver', exams: 10 },
+            'Silver': { next: 'Platinum', exams: 25 },
+            'Platinum': { next: 'Legendary', exams: 50 },
+            'Legendary': { next: 'Master', exams: 100 },
+            'Master': { next: null, exams: 300 }
+        };
+
+        // --- DOM Element Selectors ---
+        const screens = {
+            loading: document.getElementById('loading-screen'),
+            auth: document.getElementById('auth-screen'),
+            dashboard: document.getElementById('dashboard-screen'),
+            question: document.getElementById('question-screen'),
+            result: document.getElementById('result-screen'),
+        };
+        const modals = {
+            profile: document.getElementById('profile-modal'),
+            hintAd: document.getElementById('hint-ad-modal'),
+            message: document.getElementById('message-modal'),
+        };
+
+        // --- 2. INITIALIZATION ---
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // App Entry Point
+        initApp();
+
+        async function initApp() {
+            log('App Initializing...');
+            auth.onAuthStateChanged(onUserSignedIn);
+            await fetchInitialQuestions(); // Start fetching questions
+        }
+
+        function onUserSignedIn(user) {
+            if (user) {
+                // User is signed in.
+                userProfile = user;
+                log('User signed in:', user.displayName);
+                loadUserProgress(); // Load progress from IndexedDB
+                setupDashboard();
+                updateProfileIcon();
+                showScreen('dashboard');
+            } else {
+                // User is signed out.
+                userProfile = null;
+                log('User is signed out.');
+                showScreen('auth');
+            }
+        }
+
+        // --- 3. UI/SCREEN MANAGEMENT ---
+
+        function showScreen(screenName) {
+            Object.values(screens).forEach(screen => screen.classList.remove('active'));
+            if (screens[screenName]) {
+                screens[screenName].classList.add('active');
+            }
+        }
+        
+        function showModal(modalName) {
+            if (modals[modalName]) {
+                modals[modalName].classList.add('active');
+            }
+        }
+        
+        function hideAllModals() {
+            Object.values(modals).forEach(modal => modal.classList.remove('active'));
+        }
+        
+        function showToast(message) {
+            const toastContainer = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            toastContainer.appendChild(toast);
+            
+            setTimeout(() => { toast.style.opacity = '1'; }, 10); // Fade in
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 500); // Remove after fade out
+            }, 3000);
+        }
+
+        // --- 4. DATA FETCHING & MANAGEMENT (GEMINI + BATCHING) ---
+
+        async function fetchInitialQuestions() {
+            log('Fetching initial batch of 105 questions...');
+            const loadingProgress = document.getElementById('loading-progress');
+            let percent = 0;
+            const interval = setInterval(() => {
+                percent += 1;
+                if(percent <= 90) loadingProgress.textContent = `${percent}%`;
+            }, 50);
+
+            // This simulates the Gemini API call
+            allQuestions = await fetchGeminiBatch('General Knowledge', 105);
+            currentIndex = 0;
+            
+            clearInterval(interval);
+            loadingProgress.textContent = `100%`;
+            log('Initial questions loaded.');
+
+            // Wait a moment before transitioning
+            setTimeout(() => {
+                if (!userProfile) {
+                    showScreen('auth');
+                }
+            }, 500);
+        }
+
+        function getNextBatch(count = 15) {
+            if (currentIndex + count > allQuestions.length) {
+                // Not enough questions, take what's left
+                const remaining = allQuestions.slice(currentIndex);
+                currentIndex = allQuestions.length;
+                return remaining;
+            }
+            const batch = allQuestions.slice(currentIndex, currentIndex + count);
+            currentIndex += count;
+            
+            // Background fetch if we're running low
+            if (allQuestions.length - currentIndex < 15) {
+                fetchMoreQuestionsInBackground();
+            }
+            
+            return batch;
+        }
+
+        async function fetchMoreQuestionsInBackground() {
+            showToast('Preparing more questions...');
+            log('Fetching more questions in background...');
+            const moreQuestions = await fetchGeminiBatch('General Knowledge', 105);
+            allQuestions = [...allQuestions, ...moreQuestions];
+            log('Added 105 more questions. Total:', allQuestions.length);
+        }
+
+        /**
+         * STUB FUNCTION for Gemini API call.
+         * In production, this should make a fetch request to YOUR secure server endpoint.
+         * Your server will then use its secret API key to call the real Gemini API.
+         */
+        async function fetchGeminiBatch(section, count) {
+            log(`Simulating Gemini API call for ${count} questions in section: ${section}`);
+
+            // --- Example Gemini Prompt (for server-side implementation) ---
+            /*
+            const geminiPrompt = `
+            Generate ${count} diverse general knowledge multiple-choice questions suitable for an exam app.
+            The questions should cover topics like history, geography, science, and current events.
+            Each question must have 4 options, with only one correct answer.
+            Provide the output as a valid JSON array of objects. Each object must have the following structure:
+            {
+              "question": "The question text.",
+              "options": ["Option A", "Option B", "Option C", "Option D"],
+              "answer": "The correct option text.",
+              "hint": "A helpful hint for the user."
+            }
+            Do not include any text or formatting outside of the JSON array.
+            `;
+            */
+
+            // Simulate network delay
+            await new Promise(resolve => setTimeout(resolve, 2500));
+
+            // Return dummy data for demonstration
+            const dummyQuestions = [];
+            for (let i = 1; i <= count; i++) {
+                const qNum = allQuestions.length + i;
+                dummyQuestions.push({
+                    id: `q${qNum}`,
+                    question: `This is dummy question number ${qNum}. What is its correct answer?`,
+                    options: [`Answer A for ${qNum}`, `Answer B for ${qNum}`, `Answer C for ${qNum}`, `Answer D for ${qNum}`],
+                    answer: `Answer C for ${qNum}`,
+                    hint: `The correct answer for question ${qNum} contains the letter 'C'.`
+                });
+            }
+            return dummyQuestions;
+        }
+        
+        // --- 5. AUTHENTICATION (FIREBASE) ---
+        document.getElementById('google-signin-btn').addEventListener('click', () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider)
+                .catch(error => {
+                    console.error("Authentication Error:", error);
+                    alert("Could not sign in. Please try again. Error: " + error.message);
+                });
+        });
+
+        document.getElementById('sign-out-btn').addEventListener('click', () => {
+            auth.signOut();
+            hideAllModals();
+        });
+
+        // --- 6. DASHBOARD & PROFILE ---
+        
+        function setupDashboard() {
+            const sections = ["History", "Polity", "Economy", "Science", "Current Affairs", "Geography"];
+            const grid = document.querySelector('.section-grid');
+            grid.innerHTML = ''; // Clear existing
+            
+            sections.forEach(section => {
+                const card = document.createElement('div');
+                card.className = 'section-card';
+                card.innerHTML = `
+                    <h3>${section}</h3>
+                    <p>Test your knowledge of ${section.toLowerCase()}.</p>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" data-action="practice" data-section="${section}">Practice (15 Qs)</button>
+                        <button class="btn btn-secondary" data-action="read" data-section="${section}">Read (50 Qs)</button>
+                        <button class="btn" data-action="saved" data-section="${section}">Saved</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+        
+        document.querySelector('.section-grid').addEventListener('click', (e) => {
+            if (e.target.matches('[data-action="practice"]')) {
+                const section = e.target.dataset.section;
+                startQuiz(section);
+            } else {
+                showToast("This feature is coming soon!");
+            }
+        });
+
+        function updateProfileIcon() {
+            const profileIcon = document.getElementById('profile-icon');
+            if (userProfile.photoURL) {
+                profileIcon.innerHTML = `<img src="${userProfile.photoURL}" alt="Profile Picture">`;
+            } else {
+                profileIcon.textContent = userProfile.displayName ? userProfile.displayName.charAt(0).toUpperCase() : 'G';
+            }
+        }
+
+        document.getElementById('profile-icon').addEventListener('click', () => {
+            document.getElementById('profile-email').textContent = userProfile.email;
+            document.getElementById('profile-rank').textContent = userProgress.rank;
+            document.getElementById('profile-coins').textContent = userProgress.coins;
+            document.getElementById('profile-correct').textContent = userProgress.totalCorrect;
+            document.getElementById('profile-attempts').textContent = userProgress.totalAttempts;
+            showModal('profile');
+        });
+
+        // --- 7. QUIZ LOGIC ---
+        
+        function startQuiz(section) {
+            log(`Starting quiz for section: ${section}`);
+            currentQuizQuestions = getNextBatch(15);
+            if(currentQuizQuestions.length === 0) {
+                showToast("No more questions available right now. Try again later.");
+                return;
+            }
+            currentQuestionIndex = 0;
+            score = 0;
+            showScreen('question');
+            displayQuestion();
+        }
+
+        function displayQuestion() {
+            if (currentQuestionIndex >= currentQuizQuestions.length) {
+                showResult();
+                return;
+            }
+
+            const question = currentQuizQuestions[currentQuestionIndex];
+            document.getElementById('question-progress').textContent = `Question ${currentQuestionIndex + 1}/${currentQuizQuestions.length}`;
+            document.getElementById('question-text').textContent = question.question;
+            
+            const optionsGrid = document.getElementById('options-grid');
+            optionsGrid.innerHTML = '';
+            question.options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'option-btn';
+                button.textContent = option;
+                button.addEventListener('click', () => handleAnswer(button, option, question.answer));
+                optionsGrid.appendChild(button);
+            });
+            
+            document.getElementById('next-question-btn').style.display = 'none';
+            document.getElementById('hint-btn').style.display = 'block';
+        }
+
+        function handleAnswer(button, selectedOption, correctAnswer) {
+            const allOptions = document.querySelectorAll('.option-btn');
+            allOptions.forEach(btn => btn.classList.add('disabled'));
+            
+            if (selectedOption === correctAnswer) {
+                button.classList.add('correct');
+                score++;
+                log('Correct answer!');
+            } else {
+                button.classList.add('wrong');
+                // Highlight the correct answer
+                allOptions.forEach(btn => {
+                    if (btn.textContent === correctAnswer) {
+                        btn.classList.add('correct');
+                    }
+                });
+                log('Wrong answer!');
+            }
+
+            document.getElementById('next-question-btn').style.display = 'block';
+        }
+        
+        document.getElementById('next-question-btn').addEventListener('click', () => {
+            currentQuestionIndex++;
+            displayQuestion();
+        });
+
+        function showResult() {
+            showScreen('result');
+            const percentage = Math.round((score / currentQuizQuestions.length) * 100);
+            document.getElementById('result-score').textContent = `${percentage}%`;
+            document.getElementById('result-summary').textContent = `You answered ${score} out of ${currentQuizQuestions.length} questions correctly.`;
+            
+            // Update user progress
+            userProgress.totalAttempts += currentQuizQuestions.length;
+            userProgress.totalCorrect += score;
+            if (percentage >= 80) {
+                userProgress.examsWith80Percent++;
+                checkRankUp();
+            }
+            saveUserProgress();
+        }
+        
+        document.getElementById('restart-quiz-btn').addEventListener('click', () => startQuiz('General Knowledge'));
+        document.getElementById('back-to-dashboard-btn').addEventListener('click', () => showScreen('dashboard'));
+        
+        // --- 8. HINT & REWARDED AD FLOW ---
+        
+        document.getElementById('hint-btn').addEventListener('click', () => {
+            showModal('hintAd');
+        });
+
+        document.getElementById('confirm-ad-watch-btn').addEventListener('click', () => {
+            hideAllModals();
+            showRewardedAdThen(() => {
+                // This is the callback after the ad "finishes"
+                const hint = currentQuizQuestions[currentQuestionIndex].hint;
+                userProgress.coins += 10;
+                saveUserProgress();
+                
+                document.getElementById('message-modal-title').textContent = 'Hint Unlocked!';
+                document.getElementById('message-modal-text').textContent = hint;
+                showModal('message');
+                
+                showToast('+10 Coins! 💰');
+                playConfetti();
+            });
+        });
+
+        function showRewardedAdThen(callback) {
+            // TODO: Replace this simulated rewarded ad with real AdMob/AdSense rewarded-ad code.
+            log('Simulating rewarded ad...');
+            const adModal = document.createElement('div');
+            adModal.className = 'modal active';
+            adModal.style.zIndex = '2001';
+            adModal.innerHTML = `
+                <div class="modal-content" style="text-align: center;">
+                    <h3>Simulated Ad</h3>
+                    <p>Ad will close in <span id="ad-timer">3</span>s...</p>
+                </div>
+            `;
+            document.body.appendChild(adModal);
+
+            let timeLeft = 3;
+            const timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('ad-timer').textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    adModal.remove();
+                    if (callback) callback();
+                }
+            }, 1000);
+        }
+
+        // --- 9. RANKING & LEVELS ---
+        
+        function checkRankUp() {
+            const currentRankInfo = rankRequirements[userProgress.rank];
+            if (currentRankInfo && currentRankInfo.next && userProgress.examsWith80Percent >= currentRankInfo.exams) {
+                userProgress.rank = currentRankInfo.next;
+                log(`User ranked up to ${userProgress.rank}`);
+                showToast(`Congratulations! You've been promoted to ${userProgress.rank}!`);
+                playConfetti();
+            }
+        }
+        
+        // TODO: Implement season change logic. This should run on app start.
+        function handleSeasonChange() {
+            const lastSeasonCheck = localStorage.getItem('lastSeasonCheck');
+            const currentMonth = new Date().getMonth();
+            if (lastSeasonCheck !== currentMonth.toString()) {
+                // New season!
+                // Implement rank reduction logic here (e.g., reduce by 60%)
+                log("New season started. Rank logic to be applied.");
+                localStorage.setItem('lastSeasonCheck', currentMonth.toString());
+            }
+        }
+        
+        // --- 10. PERSISTENCE (IndexedDB) ---
+        // WARNING: Client-only storage is NOT fully secure for sensitive data; migrate to server-side encryption for production.
+        
+        let db;
+        const dbName = 'GKMasterDB';
+
+        function openDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(dbName, 1);
+                request.onupgradeneeded = event => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains('userProgress')) {
+                        db.createObjectStore('userProgress', { keyPath: 'userId' });
+                    }
+                     if (!db.objectStoreNames.contains('savedQuestions')) {
+                        db.createObjectStore('savedQuestions', { keyPath: 'id' });
+                    }
+                };
+                request.onsuccess = event => {
+                    db = event.target.result;
+                    resolve(db);
+                };
+                request.onerror = event => {
+                    console.error('IndexedDB error:', event.target.errorCode);
+                    reject(event.target.errorCode);
+                };
+            });
+        }
+        
+        async function getHashedUserId() {
+            if (!userProfile || !userProfile.email) return 'guest';
+            const encoder = new TextEncoder();
+            const data = encoder.encode(userProfile.email);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        async function saveUserProgress() {
+            if (!db || !userProfile) return;
+            const userId = await getHashedUserId();
+            const transaction = db.transaction(['userProgress'], 'readwrite');
+            const store = transaction.objectStore('userProgress');
+            store.put({ userId, ...userProgress });
+        }
+        
+        async function loadUserProgress() {
+            if (!db) {
+                db = await openDB();
+            }
+            if (!userProfile) return;
+
+            const userId = await getHashedUserId();
+            const transaction = db.transaction(['userProgress'], 'readonly');
+            const store = transaction.objectStore('userProgress');
+            const request = store.get(userId);
+
+            request.onsuccess = () => {
+                if (request.result) {
+                    log('Loaded user progress from IndexedDB.');
+                    // Merge loaded data with default, ensuring new properties are added
+                    Object.assign(userProgress, request.result);
+                } else {
+                    log('No saved progress found for user. Using defaults.');
+                    saveUserProgress(); // Save default progress for new user
+                }
+            };
+        }
+        
+        // --- 11. UTILITIES & HELPERS ---
+        
+        // Generic modal close listeners
+        document.querySelectorAll('.modal-close, #cancel-ad-watch-btn, #message-modal-ok-btn').forEach(btn => {
+            btn.addEventListener('click', hideAllModals);
+        });
+        
+        function playConfetti() {
+            const container = document.querySelector('.app-container');
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.animationDuration = Math.random() * 2 + 3 + 's';
+                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 75%)`;
+                confetti.style.transform = `scale(${Math.random() + 0.5})`;
+                container.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 5000);
+            }
+        }
+        
+        function log(...args) {
+            if (DEBUG) {
+                console.log('[GK MASTER]', ...args);
+            }
+        }
+
+        // --- End of Script ---
+    });
+    </script>
+</body>
+</html>
