@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GK MASTER</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6a5af9;
+            --secondary-color: #f72585;
+            --background-color: #1a1a2e;
+            --card-color: #16213e;
+            --text-color: #e0e0e0;
+            --accent-color-1: #4cc9f0;
+            --accent-color-2: #7209b7;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            overflow: hidden;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* --- Loading Screen --- */
+        #loading-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(45deg, #1a1a2e, #16213e);
+            position: fixed;
+            width: 100%;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-title {
+            font-size: 4rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color), var(--accent-color-1));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: text-glow 2s ease-in-out infinite alternate;
+            margin-bottom: 2rem;
+        }
+
+        @keyframes text-glow {
+            from {
+                text-shadow: 0 0 10px #fff, 0 0 20px var(--primary-color), 0 0 30px var(--secondary-color);
+            }
+            to {
+                text-shadow: 0 0 20px #fff, 0 0 30px var(--accent-color-1), 0 0 40px var(--accent-color-2);
+            }
+        }
+
+        .progress-bar-container {
+            width: 80%;
+            max-width: 400px;
+            height: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        #progress-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary-color), var(--accent-color-1));
+            border-radius: 10px;
+            transition: width 0.1s ease-out;
+        }
+
+        .ad-banner {
+            position: absolute;
+            bottom: 20px;
+            width: 320px;
+            height: 50px;
+            background-color: #333;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+
+        /* --- Login Screen --- */
+        #login-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        #login-button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #login-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        /* --- Main App Container --- */
+        #app {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: var(--card-color);
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        #profile-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            cursor: pointer;
+            border: 2px solid var(--accent-color-1);
+        }
+
+        /* Main Content Area */
+        main {
+            flex-grow: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .category-card {
+            background-color: var(--card-color);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .category-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+
+        .category-card h2 {
+            margin-top: 0;
+            color: var(--accent-color-1);
+        }
+
+        .category-buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-practice { background-color: var(--primary-color); }
+        .btn-read { background-color: var(--accent-color-2); }
+        .btn-saved { background-color: var(--secondary-color); }
+
+        .btn:hover {
+            opacity: 0.8;
+            transform: scale(1.05);
+        }
+
+        /* --- Quiz View --- */
+        #quiz-view {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        #quiz-container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-color);
+            padding: 2rem;
+            border-radius: 15px;
+        }
+
+        #question-text {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .option-btn {
+            width: 100%;
+            padding: 1rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 2px solid transparent;
+            color: var(--text-color);
+            border-radius: 10px;
+            text-align: left;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        
+        .option-btn:hover {
+            background-color: var(--primary-color);
+            border-color: var(--accent-color-1);
+        }
+        
+        .option-btn.correct { background-color: #28a745; }
+        .option-btn.incorrect { background-color: #dc3545; }
+        .option-btn:disabled { cursor: not-allowed; }
+
+        .quiz-footer {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* --- Generic Page View (Profile, Read, Saved) --- */
+        .page-view {
+            padding: 2rem;
+            height: 100vh;
+            overflow-y: auto;
+            box-sizing: border-box;
+            background: var(--background-color);
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .back-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .page-content {
+            background-color: var(--card-color);
+            padding: 2rem;
+            border-radius: 15px;
+        }
+        
+        /* Profile Page */
+        #profile-page .info-item {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        #profile-page .info-item strong {
+            color: var(--accent-color-1);
+        }
+        
+        #ranks-container {
+            margin-top: 2rem;
+        }
+        .rank {
+            padding: 1rem;
+            border: 2px solid #555;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        .rank.unlocked {
+            opacity: 1;
+            border-color: var(--secondary-color);
+        }
+        
+        /* Read/Saved Questions List */
+        .question-list-item {
+            background: rgba(0,0,0,0.2);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+        .question-list-item p { margin: 0.5rem 0; }
+        .question-list-item .correct-answer { color: #28a745; font-weight: bold; }
+
+        /* Modal for Results/Ads */
+        .modal {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--card-color);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+            animation: modal-appear 0.3s ease;
+        }
+
+        @keyframes modal-appear {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        #result-modal h2 { color: var(--accent-color-1); }
+        #result-modal p { font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+
+    <!-- 1. Loading Screen -->
+    <div id="loading-screen">
+        <h1 class="loading-title">GK MASTER</h1>
+        <div class="progress-bar-container">
+            <div id="progress-bar"></div>
+        </div>
+        <div class="ad-banner">
+            <!-- In a real app, Google AdSense code would go here -->
+            Banner Ad Placeholder
+        </div>
+    </div>
+
+    <!-- 2. Login Screen -->
+    <div id="login-screen" class="hidden">
+        <h1 class="loading-title">Welcome to GK MASTER</h1>
+        <button id="login-button">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="white"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 6.93l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/><path d="M1 1h22v22H1z" fill="none"/></svg>
+            Login with Google
+        </button>
+    </div>
+
+    <!-- Main App -->
+    <div id="app" class="hidden">
+        <header>
+            <h1>GK MASTER</h1>
+            <img id="profile-icon" src="" alt="Profile">
+        </header>
+
+        <main id="dashboard">
+            <div class="category-grid">
+                <!-- Categories will be injected here by JS -->
+            </div>
+            <div class="ad-banner" style="position: relative; margin: 2rem auto;">
+                 <!-- In a real app, Google AdSense code would go here -->
+                Dashboard Banner Ad
+            </div>
+        </main>
+
+        <div id="quiz-view" class="hidden">
+             <div id="quiz-container">
+                <p id="question-counter">Question 1/15</p>
+                <h2 id="question-text">Loading question...</h2>
+                <div id="options-grid" class="options-grid"></div>
+                <div class="quiz-footer">
+                    <button id="hint-btn" class="btn btn-read">Hint</button>
+                    <button id="save-question-btn" class="btn btn-saved">Save</button>
+                    <button id="back-to-dashboard-btn" class="btn">Back to Dashboard</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Generic Page View for Profile, Read, Saved -->
+        <div id="page-view" class="page-view hidden">
+            <div class="page-header">
+                <button id="page-back-btn" class="back-btn">¡û Back</button>
+                <h1 id="page-title"></h1>
+            </div>
+            <div id="page-content" class="page-content">
+                <!-- Content for Profile, Read, Saved will be injected here -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Modals -->
+    <div id="result-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Quiz Finished!</h2>
+            <p id="result-text"></p>
+            <p id="rank-update-text"></p>
+            <button id="close-result-modal-btn" class="btn btn-practice">Close</button>
+        </div>
+    </div>
+    
+    <div id="ad-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Showing Rewarded Ad</h2>
+            <p>Ad is playing... Please wait.</p>
+            <div class="progress-bar-container" style="margin-top: 1rem;">
+                <div id="ad-progress-bar" style="width: 0%; height: 100%; background: var(--primary-color); transition: width 5s linear;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="hint-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Hint</h2>
+            <p id="hint-text"></p>
+            <button id="close-hint-modal-btn" class="btn btn-practice">Got it!</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        // --- CONFIG (MUST USE) ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyDgvM9KVmPCU5G--b0cN23C3Akl4AH-rR0",
+            authDomain: "gk-master-7c5b8.firebaseapp.com",
+            databaseURL: "https://gk-master-7c5b8-default-rtdb.firebaseio.com",
+            projectId: "gk-master-7c5b8",
+            storageBucket: "gk-master-7c5b8.firebasestorage.app",
+            messagingSenderId: "84454232469",
+            appId: "1:84454232469:web:0a8dd40e9a91b7793f269c"
+        };
+
+        const GEMINI_API_KEY = "AIzaSyC3ZXZFpdFyW2JD430smueNGveSG_xV92Y";
+
+        // --- Firebase Initialization ---
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        // --- Global State ---
+        let currentUser = null;
+        let userData = {};
+        let allQuestions = {}; // { category: [questions] }
+        let currentQuiz = {
+            category: null,
+            questions: [],
+            score: 0,
+            currentIndex: 0
+        };
+
+        const CATEGORIES = ["History", "Science", "Politics", "Current Affairs", "Geography", "Art & Culture"];
+        const QUESTIONS_PER_BATCH = 105;
+        const QUESTIONS_PER_QUIZ = 15;
+        
+        // --- DOM Elements ---
+        const loadingScreen = document.getElementById('loading-screen');
+        const progressBar = document.getElementById('progress-bar');
+        const loginScreen = document.getElementById('login-screen');
+        const appScreen = document.getElementById('app');
+        const dashboardView = document.getElementById('dashboard');
+        const quizView = document.getElementById('quiz-view');
+        const pageView = document.getElementById('page-view');
+        
+        // --- App Logic ---
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            initLoadingScreen();
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    currentUser = user;
+                    Promise.all([fetchUserData(), checkAndGenerateQuestions()]).then(() => {
+                        showScreen('app');
+                        updateProfileIcon();
+                        initDashboard();
+                    });
+                } else {
+                    showScreen('login');
+                }
+                loadingScreen.style.opacity = '0';
+                setTimeout(() => loadingScreen.classList.add('hidden'), 500);
+            });
+
+            document.getElementById('login-button').addEventListener('click', () => {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                auth.signInWithRedirect(provider);
+            });
+
+            document.getElementById('profile-icon').addEventListener('click', showProfilePage);
+            document.getElementById('page-back-btn').addEventListener('click', () => showScreen('app'));
+            document.getElementById('back-to-dashboard-btn').addEventListener('click', () => showScreen('app'));
+            document.getElementById('close-result-modal-btn').addEventListener('click', () => {
+                document.getElementById('result-modal').classList.add('hidden');
+                showScreen('app');
+            });
+            document.getElementById('hint-btn').addEventListener('click', handleHintRequest);
+            document.getElementById('save-question-btn').addEventListener('click', saveCurrentQuestion);
+        });
+
+        function initLoadingScreen() {
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 10;
+                if (progress > 100) progress = 100;
+                progressBar.style.width = progress + '%';
+                if (progress === 100) clearInterval(interval);
+            }, 200);
+        }
+        
+        function showScreen(screen) {
+            loginScreen.classList.add('hidden');
+            appScreen.classList.add('hidden');
+            
+            dashboardView.classList.remove('hidden');
+            quizView.classList.add('hidden');
+            pageView.classList.add('hidden');
+
+            if (screen === 'login') {
+                loginScreen.classList.remove('hidden');
+            } else if (screen === 'app') {
+                appScreen.classList.remove('hidden');
+            } else if (screen === 'quiz') {
+                appScreen.classList.remove('hidden');
+                dashboardView.classList.add('hidden');
+                quizView.classList.remove('hidden');
+            } else if (screen === 'page') {
+                appScreen.classList.remove('hidden');
+                dashboardView.classList.add('hidden');
+                pageView.classList.remove('hidden');
+            }
+        }
+        
+        function updateProfileIcon() {
+            if (currentUser) {
+                document.getElementById('profile-icon').src = currentUser.photoURL || `https://ui-avatars.com/api/?name=${currentUser.displayName}&background=random`;
+            }
+        }
+        
+        // --- Firebase Data ---
+        async function fetchUserData() {
+            const userRef = database.ref(`users/${currentUser.uid}`);
+            const snapshot = await userRef.once('value');
+            if (snapshot.exists()) {
+                userData = snapshot.val();
+            } else {
+                // Create new user profile
+                userData = {
+                    email: currentUser.email,
+                    examsGiven: 0,
+                    questionsSolved: 0,
+                    savedQuestions: {},
+                    ranks: { current: 'Unranked', history: [] },
+                    examHistory: [] // To track high score exams for ranks
+                };
+                await userRef.set(userData);
+            }
+            // Check for monthly rank reset
+            checkRankReset();
+        }
+        
+        function updateFirebaseUserData() {
+            database.ref(`users/${currentUser.uid}`).set(userData);
+        }
+        
+        // --- Dashboard ---
+        function initDashboard() {
+            const grid = document.querySelector('.category-grid');
+            grid.innerHTML = '';
+            CATEGORIES.forEach(category => {
+                const card = document.createElement('div');
+                card.className = 'category-card';
+                card.innerHTML = `
+                    <h2>${category}</h2>
+                    <div class="category-buttons">
+                        <button class="btn btn-practice" data-category="${category}">Practice</button>
+                        <button class="btn btn-read" data-category="${category}">Read</button>
+                        <button class="btn btn-saved" data-category="${category}">Saved</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            grid.addEventListener('click', handleDashboardClick);
+        }
+
+        function handleDashboardClick(e) {
+            const category = e.target.dataset.category;
+            if (!category) return;
+
+            if (e.target.classList.contains('btn-practice')) {
+                startQuiz(category);
+            } else if (e.target.classList.contains('btn-read')) {
+                showReadPage(category);
+            } else if (e.target.classList.contains('btn-saved')) {
+                showSavedPage(category);
+            }
+        }
+        
+        // --- AI Question Generation (Gemini) ---
+        async function checkAndGenerateQuestions() {
+            const localQuestions = JSON.parse(localStorage.getItem('gkMasterQuestions'));
+            if (localQuestions) {
+                allQuestions = localQuestions;
+                // Simple check if any category has questions
+                if(allQuestions[CATEGORIES[0]] && allQuestions[CATEGORIES[0]].length > 0) {
+                   return; 
+                }
+            }
+            
+            // If no valid local questions, fetch from Gemini
+            const loadingScreen = document.getElementById('loading-screen');
+            loadingScreen.classList.remove('hidden');
+            loadingScreen.style.opacity = '1';
+            
+            try {
+                const fetchPromises = CATEGORIES.map(category => generateQuestionsForCategory(category));
+                await Promise.all(fetchPromises);
+                localStorage.setItem('gkMasterQuestions', JSON.stringify(allQuestions));
+            } catch (error) {
+                console.error("Error generating questions:", error);
+                alert("Failed to load questions. Please try again later.");
+            } finally {
+                loadingScreen.style.opacity = '0';
+                setTimeout(() => loadingScreen.classList.add('hidden'), 500);
+            }
+        }
+        
+        async function generateQuestionsForCategory(category) {
+            const prompt = `Generate ${QUESTIONS_PER_BATCH} general knowledge questions for the category "${category}". Provide the response as a valid JSON array of objects. Each object must have three properties: "question" (string), "options" (an array of 4 strings, with one being the correct answer), and "answer" (a string that is an exact match to the correct option), and "explanation" (a brief string explaining the answer). Do not include any text outside of the JSON array.`;
+            
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }]
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+                
+                const data = await response.json();
+                let jsonString = data.candidates[0].content.parts[0].text;
+                jsonString = jsonString.replace(/```json/g, '').replace(/```/g, '').trim();
+                
+                allQuestions[category] = JSON.parse(jsonString);
+
+            } catch(e) {
+                console.error(`Failed to fetch questions for ${category}:`, e);
+                allQuestions[category] = []; // Avoid crashing the app
+            }
+        }
+
+        // --- Quiz Logic ---
+        function startQuiz(category) {
+            if (!allQuestions[category] || allQuestions[category].length < QUESTIONS_PER_QUIZ) {
+                alert("Not enough questions available for this category. Generating new ones...");
+                checkAndGenerateQuestions().then(() => startQuiz(category));
+                return;
+            }
+            
+            const questionsForQuiz = allQuestions[category].splice(0, QUESTIONS_PER_QUIZ);
+            
+            currentQuiz = {
+                category,
+                questions: questionsForQuiz,
+                score: 0,
+                currentIndex: 0
+            };
+            
+            showScreen('quiz');
+            displayCurrentQuestion();
+        }
+
+        function displayCurrentQuestion() {
+            if (currentQuiz.currentIndex >= currentQuiz.questions.length) {
+                finishQuiz();
+                return;
+            }
+            
+            const q = currentQuiz.questions[currentQuiz.currentIndex];
+            document.getElementById('question-counter').textContent = `Question ${currentQuiz.currentIndex + 1}/${QUESTIONS_PER_QUIZ}`;
+            document.getElementById('question-text').textContent = q.question;
+            
+            const optionsGrid = document.getElementById('options-grid');
+            optionsGrid.innerHTML = '';
+            
+            q.options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'option-btn';
+                button.textContent = option;
+                button.addEventListener('click', handleAnswer);
+                optionsGrid.appendChild(button);
+            });
+        }
+        
+        function handleAnswer(e) {
+            const selectedOption = e.target.textContent;
+            const q = currentQuiz.questions[currentQuiz.currentIndex];
+            const isCorrect = selectedOption === q.answer;
+            
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.disabled = true;
+                if(btn.textContent === q.answer) {
+                    btn.classList.add('correct');
+                } else if(btn.textContent === selectedOption) {
+                    btn.classList.add('incorrect');
+                }
+            });
+            
+            if (isCorrect) {
+                currentQuiz.score++;
+            }
+            
+            setTimeout(() => {
+                currentQuiz.currentIndex++;
+                displayCurrentQuestion();
+            }, 1500);
+        }
+        
+        async function finishQuiz() {
+            const scorePercentage = (currentQuiz.score / QUESTIONS_PER_QUIZ) * 100;
+            
+            // Update user stats
+            userData.examsGiven = (userData.examsGiven || 0) + 1;
+            userData.questionsSolved = (userData.questionsSolved || 0) + QUESTIONS_PER_QUIZ;
+            if (scorePercentage >= 80) {
+                userData.examHistory = userData.examHistory || [];
+                userData.examHistory.push({ date: new Date().toISOString(), score: scorePercentage });
+            }
+            
+            // Check for rank update
+            const oldRank = userData.ranks.current;
+            updateUserRank();
+            const newRank = userData.ranks.current;
+            
+            document.getElementById('result-text').textContent = `You scored ${currentQuiz.score} out of ${QUESTIONS_PER_QUIZ} (${scorePercentage.toFixed(2)}%)!`;
+            if(newRank !== oldRank) {
+                document.getElementById('rank-update-text').textContent = `Congratulations! You've been promoted to ${newRank}!`;
+            } else {
+                document.getElementById('rank-update-text').textContent = '';
+            }
+            
+            document.getElementById('result-modal').classList.remove('hidden');
+            
+            // Save updated data to Firebase and local storage
+            updateFirebaseUserData();
+            localStorage.setItem('gkMasterQuestions', JSON.stringify(allQuestions));
+        }
+
+        // --- Hint System & Ads ---
+        function handleHintRequest() {
+            const adModal = document.getElementById('ad-modal');
+            const adProgressBar = document.getElementById('ad-progress-bar');
+            adModal.classList.remove('hidden');
+            
+            // Simulate ad progress
+            adProgressBar.style.width = '0%';
+            setTimeout(() => { adProgressBar.style.width = '100%'; }, 100);
+
+            setTimeout(() => {
+                adModal.classList.add('hidden');
+                showHint();
+            }, 5100); // Wait for ad to "finish"
+        }
+        
+        function showHint() {
+            const q = currentQuiz.questions[currentQuiz.currentIndex];
+            const hintModal = document.getElementById('hint-modal');
+            document.getElementById('hint-text').innerHTML = `<strong>Correct Answer:</strong> ${q.answer}<br><br><strong>Explanation:</strong> ${q.explanation}`;
+            hintModal.classList.remove('hidden');
+            document.getElementById('close-hint-modal-btn').onclick = () => hintModal.classList.add('hidden');
+        }
+
+        // --- Saved Questions ---
+        function saveCurrentQuestion() {
+            const q = currentQuiz.questions[currentQuiz.currentIndex];
+            if(!q) return;
+
+            const category = currentQuiz.category;
+            const questionId = btoa(q.question).slice(0, 16); // Create a simple ID
+
+            if (!userData.savedQuestions) userData.savedQuestions = {};
+            if (!userData.savedQuestions[category]) userData.savedQuestions[category] = {};
+            
+            userData.savedQuestions[category][questionId] = q;
+            updateFirebaseUserData();
+            alert('Question saved!');
+        }
+
+        // --- Page Views (Read, Saved, Profile) ---
+        function showReadPage(category) {
+            const questions = (allQuestions[category] || []).slice(0, 50);
+            document.getElementById('page-title').textContent = `${category} - Read`;
+            const contentDiv = document.getElementById('page-content');
+            
+            if (questions.length === 0) {
+                contentDiv.innerHTML = '<p>No questions available to read. Please try practice mode first.</p>';
+            } else {
+                contentDiv.innerHTML = questions.map(q => `
+                    <div class="question-list-item">
+                        <p><strong>Q:</strong> ${q.question}</p>
+                        <p class="correct-answer"><strong>A:</strong> ${q.answer}</p>
+                        <p><em>${q.explanation}</em></p>
+                    </div>
+                `).join('');
+            }
+            showScreen('page');
+        }
+        
+        function showSavedPage(category) {
+            const saved = (userData.savedQuestions || {})[category] || {};
+            const questions = Object.values(saved);
+            
+            document.getElementById('page-title').textContent = `${category} - Saved Questions`;
+            const contentDiv = document.getElementById('page-content');
+
+            if (questions.length === 0) {
+                contentDiv.innerHTML = `<p>You haven't saved any questions in this category yet.</p>`;
+            } else {
+                contentDiv.innerHTML = questions.map(q => `
+                    <div class="question-list-item">
+                        <p><strong>Q:</strong> ${q.question}</p>
+                        <p class="correct-answer"><strong>A:</strong> ${q.answer}</p>
+                         <p><em>${q.explanation}</em></p>
+                    </div>
+                `).join('');
+            }
+            showScreen('page');
+        }
+
+        function showProfilePage() {
+            document.getElementById('page-title').textContent = 'My Profile';
+            const contentDiv = document.getElementById('page-content');
+
+            const ranks = [
+                { name: 'Bronze', exams: 10 },
+                { name: 'Silver', exams: 25 },
+                { name: 'Platinum', exams: 50 },
+                { name: 'Legendary', exams: 100 },
+                { name: 'Master', exams: 300 }
+            ];
+
+            const highScoringExams = (userData.examHistory || []).length;
+            
+            let ranksHTML = ranks.map(rank => {
+                const unlocked = highScoringExams >= rank.exams;
+                return `<div class="rank ${unlocked ? 'unlocked' : ''}">
+                    <h3>${rank.name}</h3>
+                    <p>Pass ${rank.exams} exams with 80%+ score</p>
+                </div>`;
+            }).join('');
+            
+            contentDiv.innerHTML = `
+                <div class="info-item"><strong>Email:</strong> ${userData.email}</div>
+                <div class="info-item"><strong>Current Rank:</strong> ${userData.ranks.current}</div>
+                <div class="info-item"><strong>Total Exams Given:</strong> ${userData.examsGiven}</div>
+                <div class="info-item"><strong>Total Questions Solved:</strong> ${userData.questionsSolved}</div>
+                <div class="info-item"><strong>High-Score Exams this Season:</strong> ${highScoringExams}</div>
+
+                <div id="ranks-container">
+                    <h2>Ranks</h2>
+                    ${ranksHTML}
+                </div>
+                 <div id="past-ranks-container" style="margin-top: 2rem;">
+                    <h2>Past Seasons</h2>
+                    <p>${(userData.ranks.history || []).join(', ') || 'No past season ranks yet.'}</p>
+                </div>
+            `;
+            showScreen('page');
+        }
+
+        // --- Rank System ---
+        function updateUserRank() {
+            const highScoringExams = (userData.examHistory || []).length;
+            let newRank = 'Unranked';
+
+            if (highScoringExams >= 300) newRank = 'Master';
+            else if (highScoringExams >= 100) newRank = 'Legendary';
+            else if (highScoringExams >= 50) newRank = 'Platinum';
+            else if (highScoringExams >= 25) newRank = 'Silver';
+            else if (highScoringExams >= 10) newRank = 'Bronze';
+            
+            userData.ranks.current = newRank;
+        }
+
+        function checkRankReset() {
+            const today = new Date();
+            const lastReset = userData.lastRankReset ? new Date(userData.lastRankReset) : null;
+            
+            if (!lastReset || (lastReset.getMonth() !== today.getMonth() && today.getDate() === 1)) {
+                // It's the 1st of a new month
+                if(userData.ranks.current !== 'Unranked') {
+                    userData.ranks.history = userData.ranks.history || [];
+                    const seasonName = `${lastReset.toLocaleString('default', { month: 'long' })} ${lastReset.getFullYear()}`;
+                    userData.ranks.history.push(`${seasonName}: ${userData.ranks.current}`);
+                }
+                
+                userData.ranks.current = 'Unranked';
+                userData.examHistory = []; // Reset exam count for the new season
+                userData.lastRankReset = today.toISOString();
+                updateFirebaseUserData();
+            }
+        }
+
+    </script>
+</body>
+</html>
