@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GK MASTER</title>
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6e45e2, #88d3ce);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        
+        .app-container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0;
+        }
+        
+        /* Loading Screen */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #6e45e2, #88d3ce);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s;
+        }
+        
+        .anime-title {
+            font-size: 3.5rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(to right, #ff8a00, #da1b60, #ff8a00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            animation: glow 1.5s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            }
+            to {
+                text-shadow: 0 0 20px rgba(255, 255, 255, 0.6), 0 0 30px rgba(255, 255, 255, 0.4);
+            }
+        }
+        
+        .progress-container {
+            width: 80%;
+            max-width: 400px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, #ff8a00, #da1b60);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        
+        .loading-banner {
+            width: 100%;
+            max-width: 728px;
+            height: 90px;
+            background: #333;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px;
+            margin-top: 2rem;
+        }
+        
+        /* Login Screen */
+        #login-screen {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #6e45e2, #88d3ce);
+        }
+        
+        .login-title {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            background: linear-gradient(to right, #ff8a00, #da1b60);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .google-login-btn {
+            background: white;
+            color: #757575;
+            padding: 12px 24px;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .google-login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .google-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+        }
+        
+        /* Dashboard */
+        #dashboard {
+            min-height: 100vh;
+            padding: 20px;
+            display: none;
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            margin-bottom: 20px;
+        }
+        
+        .dashboard-title {
+            font-size: 2rem;
+            background: linear-gradient(to right, #ff8a00, #da1b60);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .profile-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .category-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        
+        .category-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .category-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: white;
+            text-align: center;
+        }
+        
+        .category-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .category-btn {
+            padding: 10px;
+            border-radius: 20px;
+            border: none;
+            background: linear-gradient(to right, #ff8a00, #da1b60);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .category-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .dashboard-banner {
+            width: 100%;
+            max-width: 728px;
+            height: 90px;
+            background: #333;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px;
+            margin: 20px auto;
+        }
+        
+        /* Quiz Screen */
+        #quiz-screen {
+            min-height: 100vh;
+            padding: 20px;
+            display: none;
+        }
+        
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .quiz-title {
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .question-counter {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+        
+        .question-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .question-text {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: white;
+        }
+        
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .option-btn {
+            padding: 12px;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .option-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .option-btn.correct {
+            background: rgba(76, 175, 80, 0.5);
+            border-color: #4CAF50;
+        }
+        
+        .option-btn.incorrect {
+            background: rgba(244, 67, 54, 0.5);
+            border-color: #F44336;
+        }
+        
+        .quiz-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .action-btn {
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .hint-btn {
+            background: linear-gradient(to right, #FF9800, #FF5722);
+            color: white;
+        }
+        
+        .save-btn {
+            background: linear-gradient(to right, #2196F3, #3F51B5);
+            color: white;
+        }
+        
+        .next-btn {
+            background: linear-gradient(to right, #4CAF50, #2E7D32);
+            color: white;
+        }
+        
+        .action-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Results Screen */
+        #results-screen {
+            min-height: 100vh;
+            padding: 20px;
+            display: none;
+            text-align: center;
+        }
+        
+        .results-title {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, #ff8a00, #da1b60);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .score-display {
+            font-size: 3rem;
+            margin: 20px 0;
+            color: white;
+        }
+        
+        .results-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .results-btn {
+            padding: 12px 24px;
+            border-radius: 24px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .retry-btn {
+            background: linear-gradient(to right, #2196F3, #3F51B5);
+            color: white;
+        }
+        
+        .dashboard-btn {
+            background: linear-gradient(to right, #4CAF50, #2E7D32);
+            color: white;
+        }
+        
+        .results-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Profile Screen */
+        #profile-screen {
+            min-height: 100vh;
+            padding: 20px;
+            display: none;
+        }
+        
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .profile-title {
+            font-size: 2rem;
+            background: linear-gradient(to right, #ff8a00, #da1b60);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .back-btn {
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: none;
+            background: linear-gradient(to right, #2196F3, #3F51B5);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .profile-info {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .info-item {
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .info-value {
+            color: white;
+        }
+        
+        .rank-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .bronze {
+            background: linear-gradient(to right, #CD7F32, #8C6B46);
+            color: white;
+        }
+        
+        .silver {
+            background: linear-gradient(to right, #C0C0C0, #A9A9A9);
+            color: black;
+        }
+        
+        .platinum {
+            background: linear-gradient(to right, #E5E4E2, #C0C0C0);
+            color: black;
+        }
+        
+        .legendary {
+            background: linear-gradient(to right, #FFD700, #DAA520);
+            color: black;
+        }
+        
+        .master {
+            background: linear-gradient(to right, #8A2BE2, #4B0082);
+            color: white;
+        }
+        
+        /* Saved Questions Screen */
+        #saved-screen {
+            min-height: 100vh;
+            padding: 20px;
+            display: none;
+        }
+        
+        .saved-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .saved-title {
+            font-size: 2rem;
+            background: linear-gradient(to right, #ff8a00, #da1b60);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .saved-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .saved-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .saved-question {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: white;
+        }
+        
+        .saved-category {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 15px;
+        }
+        
+        .saved-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .remove-btn {
+            padding: 8px 16px;
+            border-radius: 16px;
+            border: none;
+            background: linear-gradient(to right, #F44336, #D32F2F);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        /* Ad Container */
+        .ad-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .anime-title {
+                font-size: 2.5rem;
+            }
+            
+            .category-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quiz-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .results-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Loading Screen -->
+        <div id="loading-screen">
+            <h1 class="anime-title">GK MASTER</h1>
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <div class="loading-banner" id="loading-banner">
+                Loading Advertisement...
+            </div>
+        </div>
+
+        <!-- Login Screen -->
+        <div id="login-screen">
+            <h1 class="login-title">GK MASTER</h1>
+            <div class="google-login-btn" id="google-login">
+                <svg class="google-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                </svg>
+                Sign in with Google
+            </div>
+            <div class="ad-container">
+                <div class="dashboard-banner" id="login-banner">
+                    Advertisement
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="dashboard">
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">GK MASTER</h1>
+                <div class="profile-icon" id="profile-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="ad-container">
+                <div class="dashboard-banner" id="dashboard-banner">
+                    Advertisement
+                </div>
+            </div>
+            
+            <div class="category-grid">
+                <div class="category-card">
+                    <h2 class="category-title">History</h2>
+                    <div class="category-buttons">
+                        <button class="category-btn" data-category="history" data-type="practice">Practice</button>
+                        <button class="category-btn" data-category="history" data-type="read">Read</button>
+                        <button class="category-btn" data-category="history" data-type="saved">Saved</button>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <h2 class="category-title">Science</h2>
+                    <div class="category-buttons">
+                        <button class="category-btn" data-category="science" data-type="practice">Practice</button>
+                        <button class="category-btn" data-category="science" data-type="read">Read</button>
+                        <button class="category-btn" data-category="science" data-type="saved">Saved</button>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <h2 class="category-title">Politics</h2>
+                    <div class="category-buttons">
+                        <button class="category-btn" data-category="politics" data-type="practice">Practice</button>
+                        <button class="category-btn" data-category="politics" data-type="read">Read</button>
+                        <button class="category-btn" data-category="politics" data-type="saved">Saved</button>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <h2 class="category-title">Current Affairs</h2>
+                    <div class="category-buttons">
+                        <button class="category-btn" data-category="current-affairs" data-type="practice">Practice</button>
+                        <button class="category-btn" data-category="current-affairs" data-type="read">Read</button>
+                        <button class="category-btn" data-category="current-affairs" data-type="saved">Saved</button>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <h2 class="category-title">Geography</h2>
+                    <div class="category-buttons">
+                        <button class="category-btn" data-category="geography" data-type="practice">Practice</button>
+                        <button class="category-btn" data-category="geography" data-type="read">Read</button>
+                        <button class="category-btn" data-category="geography" data-type="saved">Saved</button>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <h2 class="category-title">Sports</h2>
+                    <div class="category-buttons">
+                        <button class="category-btn" data-category="sports" data-type="practice">Practice</button>
+                        <button class="category-btn" data-category="sports" data-type="read">Read</button>
+                        <button class="category-btn" data-category="sports" data-type="saved">Saved</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen">
+            <div class="quiz-header">
+                <h2 class="quiz-title" id="quiz-category">History Quiz</h2>
+                <div class="question-counter" id="question-counter">Question 1/15</div>
+            </div>
+            
+            <div class="question-container">
+                <div class="question-text" id="question-text">Loading question...</div>
+                <div class="options-container" id="options-container">
+                    <!-- Options will be added dynamically -->
+                </div>
+            </div>
+            
+            <div class="quiz-actions">
+                <button class="action-btn hint-btn" id="hint-btn">Hint</button>
+                <button class="action-btn save-btn" id="save-btn">Save Question</button>
+                <button class="action-btn next-btn" id="next-btn">Next Question</button>
+            </div>
+            
+            <div class="ad-container">
+                <div class="dashboard-banner" id="quiz-banner">
+                    Advertisement
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen">
+            <h1 class="results-title">Quiz Completed!</h1>
+            <div class="score-display" id="score-display">Score: 12/15</div>
+            <div id="rank-earned">You earned: <span class="rank-badge bronze">Bronze Rank</span></div>
+            
+            <div class="results-actions">
+                <button class="results-btn retry-btn" id="retry-btn">Try Again</button>
+                <button class="results-btn dashboard-btn" id="results-dashboard-btn">Back to Dashboard</button>
+            </div>
+            
+            <div class="ad-container">
+                <div class="dashboard-banner" id="results-banner">
+                    Advertisement
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Screen -->
+        <div id="profile-screen">
+            <div class="profile-header">
+                <h1 class="profile-title">Your Profile</h1>
+                <button class="back-btn" id="profile-back-btn">Back to Dashboard</button>
+            </div>
+            
+            <div class="profile-info">
+                <div class="info-item">
+                    <span class="info-label">Email:</span>
+                    <span class="info-value" id="profile-email">user@example.com</span>
+                </div>
+                
+                <div class="info-item">
+                    <span class="info-label">Total Questions Solved:</span>
+                    <span class="info-value" id="profile-questions">0</span>
+                </div>
+                
+                <div class="info-item">
+                    <span class="info-label">Exams Given:</span>
+                    <span class="info-value" id="profile-exams">0</span>
+                </div>
+                
+                <div class="info-item">
+                    <span class="info-label">Current Rank:</span>
+                    <span class="info-value" id="profile-rank">No rank yet</span>
+                </div>
+                
+                <div class="info-item">
+                    <span class="info-label">Saved Questions:</span>
+                    <span class="info-value" id="profile-saved">0</span>
+                </div>
+            </div>
+            
+            <h2 class="profile-title">Achievements</h2>
+            <div class="profile-info" id="achievements-list">
+                <!-- Achievements will be added dynamically -->
+            </div>
+        </div>
+
+        <!-- Saved Questions Screen -->
+        <div id="saved-screen">
+            <div class="saved-header">
+                <h1 class="saved-title">Saved Questions</h1>
+                <button class="back-btn" id="saved-back-btn">Back to Dashboard</button>
+            </div>
+            
+            <div class="saved-list" id="saved-questions-list">
+                <!-- Saved questions will be added dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getAuth, signInWithRedirect, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        import { getDatabase, ref, set, get, child, update, push } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDgvM9KVmPCU5G--b0cN23C3Akl4AH-rR0",
+            authDomain: "gk-master-7c5b8.firebaseapp.com",
+            databaseURL: "https://gk-master-7c5b8-default-rtdb.firebaseio.com",
+            projectId: "gk-master-7c5b8",
+            storageBucket: "gk-master-7c5b8.firebasestorage.app",
+            messagingSenderId: "84454232469",
+            appId: "1:84454232469:web:0a8dd40e9a91b7793f269c"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+        const provider = new GoogleAuthProvider();
+
+        // Gemini API key
+        const GEMINI_API_KEY = "AIzaSyC3ZXZFpdFyW2JD430smueNGveSG_xV92Y";
+
+        // Global variables
+        let currentUser = null;
+        let userData = {
+            email: "",
+            questionsSolved: 0,
+            examsGiven: 0,
+            rank: "",
+            savedQuestions: 0,
+            achievements: []
+        };
+        
+        let questionsPool = [];
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let currentCategory = "";
+        let questionBatchCount = 0;
+
+        // DOM Elements
+        const loadingScreen = document.getElementById('loading-screen');
+        const progressBar = document.getElementById('progress-bar');
+        const loginScreen = document.getElementById('login-screen');
+        const googleLoginBtn = document.getElementById('google-login');
+        const dashboard = document.getElementById('dashboard');
+        const profileIcon = document.getElementById('profile-icon');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        const profileScreen = document.getElementById('profile-screen');
+        const savedScreen = document.getElementById('saved-screen');
+        
+        // Initialize the app
+        function initApp() {
+            // Simulate loading progress
+            let progress = 0;
+            const loadingInterval = setInterval(() => {
+                progress += Math.random() * 10;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(loadingInterval);
+                    
+                    // Check auth state after loading
+                    onAuthStateChanged(auth, (user) => {
+                        if (user) {
+                            currentUser = user;
+                            loadUserData();
+                            showDashboard();
+                        } else {
+                            showLogin();
+                        }
+                    });
+                }
+                progressBar.style.width = `${progress}%`;
+            }, 200);
+            
+            // Set up event listeners
+            googleLoginBtn.addEventListener('click', signInWithGoogle);
+            profileIcon.addEventListener('click', showProfile);
+            
+            // Dashboard category buttons
+            const categoryButtons = document.querySelectorAll('.category-btn');
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', handleCategoryButtonClick);
+            });
+            
+            // Quiz buttons
+            document.getElementById('hint-btn').addEventListener('click', showHint);
+            document.getElementById('save-btn').addEventListener('click', saveQuestion);
+            document.getElementById('next-btn').addEventListener('click', nextQuestion);
+            
+            // Results buttons
+            document.getElementById('retry-btn').addEventListener('click', restartQuiz);
+            document.getElementById('results-dashboard-btn').addEventListener('click', showDashboard);
+            
+            // Profile buttons
+            document.getElementById('profile-back-btn').addEventListener('click', showDashboard);
+            
+            // Saved buttons
+            document.getElementById('saved-back-btn').addEventListener('click', showDashboard);
+        }
+        
+        // Show login screen
+        function showLogin() {
+            hideAllScreens();
+            loginScreen.style.display = 'flex';
+        }
+        
+        // Show dashboard
+        function showDashboard() {
+            hideAllScreens();
+            dashboard.style.display = 'block';
+        }
+        
+        // Show quiz screen
+        function showQuiz() {
+            hideAllScreens();
+            quizScreen.style.display = 'block';
+            displayQuestion();
+        }
+        
+        // Show results screen
+        function showResults() {
+            hideAllScreens();
+            resultsScreen.style.display = 'block';
+            
+            // Update score display
+            document.getElementById('score-display').textContent = `Score: ${score}/15`;
+            
+            // Calculate and display rank
+            const percentage = (score / 15) * 100;
+            if (percentage >= 80) {
+                let rank = '';
+                let rankClass = '';
+                
+                if (userData.examsGiven >= 300) {
+                    rank = 'Master';
+                    rankClass = 'master';
+                } else if (userData.examsGiven >= 100) {
+                    rank = 'Legendary';
+                    rankClass = 'legendary';
+                } else if (userData.examsGiven >= 50) {
+                    rank = 'Platinum';
+                    rankClass = 'platinum';
+                } else if (userData.examsGiven >= 25) {
+                    rank = 'Silver';
+                    rankClass = 'silver';
+                } else if (userData.examsGiven >= 10) {
+                    rank = 'Bronze';
+                    rankClass = 'bronze';
+                }
+                
+                if (rank) {
+                    document.getElementById('rank-earned').innerHTML = `You earned: <span class="rank-badge ${rankClass}">${rank} Rank</span>`;
+                } else {
+                    document.getElementById('rank-earned').textContent = 'Keep practicing to earn ranks!';
+                }
+            } else {
+                document.getElementById('rank-earned').textContent = 'Score below 80%. Try again to earn a rank!';
+            }
+        }
+        
+        // Show profile screen
+        function showProfile() {
+            hideAllScreens();
+            profileScreen.style.display = 'block';
+            
+            // Update profile data
+            document.getElementById('profile-email').textContent = userData.email;
+            document.getElementById('profile-questions').textContent = userData.questionsSolved;
+            document.getElementById('profile-exams').textContent = userData.examsGiven;
+            document.getElementById('profile-rank').textContent = userData.rank || 'No rank yet';
+            document.getElementById('profile-saved').textContent = userData.savedQuestions;
+            
+            // Display achievements
+            const achievementsList = document.getElementById('achievements-list');
+            achievementsList.innerHTML = '';
+            
+            if (userData.achievements && userData.achievements.length > 0) {
+                userData.achievements.forEach(achievement => {
+                    const achievementItem = document.createElement('div');
+                    achievementItem.className = 'info-item';
+                    achievementItem.innerHTML = `
+                        <span class="info-label">${achievement.date}</span>
+                        <span class="info-value">${achievement.rank} Rank</span>
+                    `;
+                    achievementsList.appendChild(achievementItem);
+                });
+            } else {
+                achievementsList.innerHTML = '<p>No achievements yet. Complete quizzes with 80%+ to earn ranks!</p>';
+            }
+        }
+        
+        // Show saved questions screen
+        function showSavedQuestions(category) {
+            hideAllScreens();
+            savedScreen.style.display = 'block';
+            
+            // Load and display saved questions
+            loadSavedQuestions(category);
+        }
+        
+        // Hide all screens
+        function hideAllScreens() {
+            loadingScreen.style.display = 'none';
+            loginScreen.style.display = 'none';
+            dashboard.style.display = 'none';
+            quizScreen.style.display = 'none';
+            resultsScreen.style.display = 'none';
+            profileScreen.style.display = 'none';
+            savedScreen.style.display = 'none';
+        }
+        
+        // Sign in with Google
+        function signInWithGoogle() {
+            signInWithRedirect(auth, provider);
+        }
+        
+        // Load user data from Firebase
+        function loadUserData() {
+            const userRef = ref(database, 'users/' + currentUser.uid);
+            get(userRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    userData = snapshot.val();
+                } else {
+                    // Initialize user data if it doesn't exist
+                    userData = {
+                        email: currentUser.email,
+                        questionsSolved: 0,
+                        examsGiven: 0,
+                        rank: "",
+                        savedQuestions: 0,
+                        achievements: []
+                    };
+                    set(userRef, userData);
+                }
+            }).catch((error) => {
+                console.error("Error loading user data:", error);
+            });
+        }
+        
+        // Save user data to Firebase
+        function saveUserData() {
+            const userRef = ref(database, 'users/' + currentUser.uid);
+            set(userRef, userData);
+        }
+        
+        // Handle category button clicks
+        function handleCategoryButtonClick(event) {
+            const button = event.currentTarget;
+            const category = button.getAttribute('data-category');
+            const type = button.getAttribute('data-type');
+            
+            currentCategory = category;
+            
+            if (type === 'practice') {
+                startQuiz(category);
+            } else if (type === 'read') {
+                // For simplicity, we'll just start a quiz in read mode
+                alert(`Read mode for ${category} would show 50 questions to study.`);
+            } else if (type === 'saved') {
+                showSavedQuestions(category);
+            }
+        }
+        
+        // Start a quiz
+        function startQuiz(category) {
+            score = 0;
+            currentQuestionIndex = 0;
+            
+            // Check if we need to generate new questions
+            if (questionsPool.length === 0 || questionBatchCount >= 7) {
+                generateQuestions(category);
+            } else {
+                // Use existing questions from the pool
+                currentQuestions = questionsPool.splice(0, 15);
+                questionBatchCount++;
+                showQuiz();
+            }
+        }
+        
+        // Generate questions using Gemini API
+        function generateQuestions(category) {
+            // Show loading screen
+            hideAllScreens();
+            loadingScreen.style.display = 'flex';
+            progressBar.style.width = '0%';
+            
+            // Simulate API call to Gemini (in a real app, you would use the actual API)
+            let progress = 0;
+            const loadingInterval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(loadingInterval);
+                    
+                    // For demo purposes, we'll generate sample questions
+                    // In a real app, you would call the Gemini API
+                    questionsPool = generateSampleQuestions(category, 105);
+                    currentQuestions = questionsPool.splice(0, 15);
+                    questionBatchCount = 1;
+                    showQuiz();
+                }
+                progressBar.style.width = `${progress}%`;
+            }, 200);
+        }
+        
+        // Display the current question
+        function displayQuestion() {
+            if (currentQuestionIndex >= currentQuestions.length) {
+                endQuiz();
+                return;
+            }
+            
+            const question = currentQuestions[currentQuestionIndex];
+            document.getElementById('quiz-category').textContent = `${currentCategory.charAt(0).toUpperCase() + currentCategory.slice(1)} Quiz`;
+            document.getElementById('question-counter').textContent = `Question ${currentQuestionIndex + 1}/15`;
+            document.getElementById('question-text').textContent = question.question;
+            
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const optionButton = document.createElement('button');
+                optionButton.className = 'option-btn';
+                optionButton.textContent = option;
+                optionButton.addEventListener('click', () => selectOption(optionButton, option, question.correctAnswer));
+                optionsContainer.appendChild(optionButton);
+            });
+            
+            // Reset next button
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.textContent = 'Next Question';
+            nextBtn.disabled = true;
+        }
+        
+        // Handle option selection
+        function selectOption(optionButton, selectedOption, correctAnswer) {
+            const options = document.querySelectorAll('.option-btn');
+            options.forEach(option => {
+                option.disabled = true;
+                if (option.textContent === correctAnswer) {
+                    option.classList.add('correct');
+                }
+            });
+            
+            if (selectedOption === correctAnswer) {
+                optionButton.classList.add('correct');
+                score++;
+            } else {
+                optionButton.classList.add('incorrect');
+            }
+            
+            document.getElementById('next-btn').disabled = false;
+        }
+        
+        // Move to the next question
+        function nextQuestion() {
+            currentQuestionIndex++;
+            displayQuestion();
+        }
+        
+        // End the quiz and show results
+        function endQuiz() {
+            // Update user data
+            userData.questionsSolved += 15;
+            userData.examsGiven += 1;
+            
+            // Check if user earned a rank
+            const percentage = (score / 15) * 100;
+            if (percentage >= 80) {
+                let rank = '';
+                
+                if (userData.examsGiven >= 300) {
+                    rank = 'Master';
+                } else if (userData.examsGiven >= 100) {
+                    rank = 'Legendary';
+                } else if (userData.examsGiven >= 50) {
+                    rank = 'Platinum';
+                } else if (userData.examsGiven >= 25) {
+                    rank = 'Silver';
+                } else if (userData.examsGiven >= 10) {
+                    rank = 'Bronze';
+                }
+                
+                if (rank && userData.rank !== rank) {
+                    userData.rank = rank;
+                    userData.achievements.push({
+                        rank: rank,
+                        date: new Date().toLocaleDateString()
+                    });
+                }
+            }
+            
+            // Save updated user data
+            saveUserData();
+            
+            // Show results screen
+            showResults();
+        }
+        
+        // Restart the quiz
+        function restartQuiz() {
+            startQuiz(currentCategory);
+        }
+        
+        // Show hint (simulate ad display)
+        function showHint() {
+            // Simulate ad display
+            if (confirm("Watch an ad to reveal the hint?")) {
+                const question = currentQuestions[currentQuestionIndex];
+                alert(`Hint: The correct answer is ${question.correctAnswer}\n\nExplanation: ${question.explanation}`);
+            }
+        }
+        
+        // Save the current question
+        function saveQuestion() {
+            const question = currentQuestions[currentQuestionIndex];
+            const savedRef = ref(database, `users/${currentUser.uid}/savedQuestions`);
+            
+            // Generate a unique key for the question
+            const newQuestionRef = push(savedRef);
+            set(newQuestionRef, {
+                category: currentCategory,
+                question: question.question,
+                options: question.options,
+                correctAnswer: question.correctAnswer,
+                explanation: question.explanation
+            });
+            
+            // Update user data
+            userData.savedQuestions += 1;
+            saveUserData();
+            
+            alert("Question saved to your collection!");
+        }
+        
+        // Load saved questions
+        function loadSavedQuestions(category) {
+            const savedRef = ref(database, `users/${currentUser.uid}/savedQuestions`);
+            get(savedRef).then((snapshot) => {
+                const savedList = document.getElementById('saved-questions-list');
+                savedList.innerHTML = '';
+                
+                if (snapshot.exists()) {
+                    const questions = snapshot.val();
+                    Object.keys(questions).forEach(key => {
+                        const question = questions[key];
+                        
+                        // Filter by category if specified
+                        if (!category || question.category === category) {
+                            const savedItem = document.createElement('div');
+                            savedItem.className = 'saved-item';
+                            savedItem.innerHTML = `
+                                <div class="saved-question">${question.question}</div>
+                                <div class="saved-category">Category: ${question.category}</div>
+                                <div class="saved-actions">
+                                    <button class="remove-btn" data-key="${key}">Remove</button>
+                                </div>
+                            `;
+                            savedList.appendChild(savedItem);
+                            
+                            // Add event listener to remove button
+                            savedItem.querySelector('.remove-btn').addEventListener('click', function() {
+                                removeSavedQuestion(key);
+                            });
+                        }
+                    });
+                } else {
+                    savedList.innerHTML = '<p>No saved questions yet.</p>';
+                }
+            }).catch((error) => {
+                console.error("Error loading saved questions:", error);
+            });
+        }
+        
+        // Remove a saved question
+        function removeSavedQuestion(key) {
+            const questionRef = ref(database, `users/${currentUser.uid}/savedQuestions/${key}`);
+            set(questionRef, null);
+            
+            // Update user data
+            userData.savedQuestions -= 1;
+            saveUserData();
+            
+            // Reload saved questions
+            loadSavedQuestions(currentCategory);
+        }
+        
+        // Generate sample questions for demo purposes
+        function generateSampleQuestions(category, count) {
+            const questions = [];
+            const categories = {
+                history: [
+                    "Who was the first President of the United States?",
+                    "In what year did World War II end?",
+                    "Who was the famous queen of ancient Egypt?",
+                    "What was the main cause of the French Revolution?",
+                    "Who discovered America in 1492?"
+                ],
+                science: [
+                    "What is the chemical symbol for gold?",
+                    "What planet is known as the Red Planet?",
+                    "What is the largest organ in the human body?",
+                    "What is the hardest natural substance on Earth?",
+                    "What is the study of fossils called?"
+                ],
+                politics: [
+                    "What is the capital of the United States?",
+                    "How many members are in the U.S. Senate?",
+                    "Who is the current Prime Minister of the United Kingdom?",
+                    "What is the supreme law of the United States?",
+                    "What are the first ten amendments to the U.S. Constitution called?"
+                ],
+                "current-affairs": [
+                    "What global event in 2020 led to widespread lockdowns?",
+                    "Which country hosted the 2020 Summer Olympics?",
+                    "Who won the 2020 U.S. Presidential election?",
+                    "What technology company became the first to reach a $2 trillion market cap in 2020?",
+                    "Which country left the European Union in 2020?"
+                ],
+                geography: [
+                    "What is the longest river in the world?",
+                    "Which continent is the largest by land area?",
+                    "What is the capital of Australia?",
+                    "Which ocean is the largest?",
+                    "What is the tallest mountain in the world?"
+                ],
+                sports: [
+                    "In what sport would you perform a slam dunk?",
+                    "How many players are on a standard soccer team?",
+                    "What country won the 2018 FIFA World Cup?",
+                    "In what year were the first modern Olympic Games held?",
+                    "Which athlete has won the most Olympic gold medals?"
+                ]
+            };
+            
+            const answers = {
+                history: ["George Washington", "1945", "Cleopatra", "Economic hardship and social inequality", "Christopher Columbus"],
+                science: ["Au", "Mars", "Skin", "Diamond", "Paleontology"],
+                politics: ["Washington D.C.", "100", "Rishi Sunak", "The Constitution", "The Bill of Rights"],
+                "current-affairs": ["COVID-19 pandemic", "Japan", "Joe Biden", "Apple", "United Kingdom"],
+                geography: ["Nile River", "Asia", "Canberra", "Pacific Ocean", "Mount Everest"],
+                sports: ["Basketball", "11", "France", "1896", "Michael Phelps"]
+            };
+            
+            const explanations = {
+                history: [
+                    "George Washington was the first President of the United States, serving from 1789 to 1797.",
+                    "World War II ended in 1945 with the surrender of Germany in May and Japan in September.",
+                    "Cleopatra was the last active ruler of the Ptolemaic Kingdom of Egypt.",
+                    "The French Revolution was primarily caused by financial crisis, social inequality, and Enlightenment ideas.",
+                    "Christopher Columbus, an Italian explorer, discovered America in 1492 while sailing under the Spanish flag."
+                ],
+                science: [
+                    "The chemical symbol for gold is Au, derived from the Latin word 'aurum' meaning gold.",
+                    "Mars is known as the Red Planet due to its reddish appearance caused by iron oxide on its surface.",
+                    "The skin is the largest organ in the human body, with a total area of about 20 square feet.",
+                    "Diamond is the hardest natural substance on Earth, scoring 10 on the Mohs scale of mineral hardness.",
+                    "Paleontology is the scientific study of fossils to understand the history of life on Earth."
+                ]
+                // Explanations for other categories would be added similarly
+            };
+            
+            for (let i = 0; i < count; i++) {
+                const categoryIndex = i % categories[category].length;
+                const question = categories[category][categoryIndex];
+                const correctAnswer = answers[category][categoryIndex];
+                
+                // Generate wrong options
+                const wrongOptions = [];
+                for (let j = 0; j < 3; j++) {
+                    let wrongAnswer;
+                    do {
+                        const randomIndex = Math.floor(Math.random() * answers[category].length);
+                        wrongAnswer = answers[category][randomIndex];
+                    } while (wrongAnswer === correctAnswer || wrongOptions.includes(wrongAnswer));
+                    
+                    wrongOptions.push(wrongAnswer);
+                }
+                
+                // Combine and shuffle options
+                const options = [correctAnswer, ...wrongOptions];
+                for (let k = options.length - 1; k > 0; k--) {
+                    const j = Math.floor(Math.random() * (k + 1));
+                    [options[k], options[j]] = [options[j], options[k]];
+                }
+                
+                questions.push({
+                    question: question,
+                    options: options,
+                    correctAnswer: correctAnswer,
+                    explanation: explanations[category] ? explanations[category][categoryIndex] : "Explanation not available."
+                });
+            }
+            
+            return questions;
+        }
+        
+        // Initialize the app when the page loads
+        window.addEventListener('load', initApp);
+    </script>
+</body>
+</html>
